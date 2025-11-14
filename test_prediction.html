@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Prediction</title>
+</head>
+<body>
+    <h1>Testing Feature Engineering</h1>
+    <div id="output"></div>
+
+    <script>
+        // Test with sample values
+        const testInputs = {
+            iq: 120,
+            prevSem: 8.5,
+            cgpa: 8.0,
+            academicPerf: 7,
+            internship: 1,  // Yes
+            extraCurricular: 7.5,
+            communication: 8,
+            projects: 3
+        };
+
+        // Feature engineering (same as in index.html)
+        function prepareFeatures(inputs) {
+            const features = [];
+            
+            // Original 8 features (in order)
+            features.push(inputs.iq);                           // IQ
+            features.push(inputs.prevSem);                      // Prev_Sem_Result
+            features.push(inputs.cgpa);                         // CGPA
+            features.push(inputs.academicPerf);                 // Academic_Performance
+            features.push(inputs.internship);                   // Internship_Experience (0 or 1)
+            features.push(inputs.extraCurricular);              // Extra_Curricular_Score
+            features.push(inputs.communication);                // Communication_Skills
+            features.push(inputs.projects);                     // Projects_Completed
+            
+            // Engineered features (must match Python order)
+            features.push(inputs.cgpa * inputs.communication);                  // CGPA_x_Communication
+            features.push(inputs.iq * inputs.academicPerf);                     // IQ_x_Academic_Performance
+            features.push(inputs.projects * inputs.internship);                 // Projects_x_Internship
+            features.push(inputs.cgpa * inputs.cgpa);                           // CGPA_squared
+            features.push(inputs.iq * inputs.iq);                               // IQ_squared
+            features.push(inputs.academicPerf * inputs.academicPerf);           // Academic_Performance_squared
+            features.push(inputs.communication * inputs.communication);         // Communication_Skills_squared
+            
+            return features;
+        }
+
+        const features = prepareFeatures(testInputs);
+        
+        let output = '<h2>Test Input Values:</h2>';
+        output += '<pre>' + JSON.stringify(testInputs, null, 2) + '</pre>';
+        
+        output += '<h2>Generated Features (15 total):</h2>';
+        output += '<ol>';
+        const featureNames = [
+            'IQ', 'Prev_Sem_Result', 'CGPA', 'Academic_Performance',
+            'Internship_Experience', 'Extra_Curricular_Score', 
+            'Communication_Skills', 'Projects_Completed',
+            'CGPA_x_Communication', 'IQ_x_Academic_Performance',
+            'Projects_x_Internship', 'CGPA_squared', 'IQ_squared',
+            'Academic_Performance_squared', 'Communication_Skills_squared'
+        ];
+        
+        features.forEach((val, idx) => {
+            output += `<li><strong>${featureNames[idx]}</strong>: ${val}</li>`;
+        });
+        output += '</ol>';
+        
+        output += '<h2>Expected Values:</h2>';
+        output += '<ul>';
+        output += '<li>Original features: 8 values</li>';
+        output += '<li>Engineered features: 7 values (3 interactions + 4 squared)</li>';
+        output += '<li>Total: 15 features</li>';
+        output += '<li>CGPA_x_Communication: 8.0 × 8 = 64.0</li>';
+        output += '<li>IQ_x_Academic_Performance: 120 × 7 = 840</li>';
+        output += '<li>Projects_x_Internship: 3 × 1 = 3</li>';
+        output += '<li>CGPA_squared: 8.0² = 64.0</li>';
+        output += '<li>IQ_squared: 120² = 14400</li>';
+        output += '<li>Academic_Performance_squared: 7² = 49</li>';
+        output += '<li>Communication_Skills_squared: 8² = 64</li>';
+        output += '</ul>';
+        
+        document.getElementById('output').innerHTML = output;
+    </script>
+</body>
+</html>

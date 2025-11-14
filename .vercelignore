@@ -1,0 +1,10 @@
+venv/
+*.py
+*.png
+Placement.csv
+README.md
+DEPLOYMENT.md
+.git/
+__pycache__/
+*.pyc
+.DS_Store

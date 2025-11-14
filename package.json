@@ -1,0 +1,12 @@
+{
+  "name": "student-placement-predictor",
+  "version": "1.0.0",
+  "description": "Binary classification predictor for student placement using Logistic Regression",
+  "scripts": {
+    "dev": "python -m http.server 8000",
+    "deploy": "vercel --prod"
+  },
+  "keywords": ["placement", "prediction", "logistic-regression", "machine-learning"],
+  "author": "",
+  "license": "MIT"
+}

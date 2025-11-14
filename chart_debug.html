@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chart Debug Tool</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <style>
+        .debug-container { margin: 20px; }
+        .debug-chart { width: 300px; height: 200px; margin: 10px; display: inline-block; border: 1px solid #ccc; }
+        .status { color: green; }
+        .error { color: red; }
+    </style>
+</head>
+<body>
+    <div class="debug-container">
+        <h1>Chart Debug Tool</h1>
+        <div id="status"></div>
+        
+        <h2>Test Charts</h2>
+        <div class="debug-chart">
+            <canvas id="test1" width="300" height="200"></canvas>
+        </div>
+        <div class="debug-chart">
+            <canvas id="test2" width="300" height="200"></canvas>
+        </div>
+        <div class="debug-chart">
+            <canvas id="test3" width="300" height="200"></canvas>
+        </div>
+    </div>
+
+    <script>
+        function addStatus(message, isError = false) {
+            const status = document.getElementById('status');
+            const div = document.createElement('div');
+            div.className = isError ? 'error' : 'status';
+            div.textContent = new Date().toLocaleTimeString() + ': ' + message;
+            status.appendChild(div);
+        }
+
+        async function testCharts() {
+            try {
+                addStatus('Chart.js version: ' + Chart.version);
+                
+                // Test simple doughnut chart
+                const ctx1 = document.getElementById('test1').getContext('2d');
+                new Chart(ctx1, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Placed', 'Not Placed'],
+                        datasets: [{
+                            data: [16.6, 83.4],
+                            backgroundColor: ['#10b981', '#ef4444']
+                        }]
+                    },
+                    options: {
+                        responsive: false,
+                        plugins: { legend: { position: 'bottom' } }
+                    }
+                });
+                addStatus('✅ Doughnut chart created');
+                
+                // Test scatter chart
+                const ctx2 = document.getElementById('test2').getContext('2d');
+                new Chart(ctx2, {
+                    type: 'scatter',
+                    data: {
+                        datasets: [{
+                            label: 'Test Data',
+                            data: [{x: 7, y: 100}, {x: 8, y: 110}, {x: 6, y: 95}],
+                            backgroundColor: '#3b82f6'
+                        }]
+                    },
+                    options: {
+                        responsive: false,
+                        scales: {
+                            x: { title: { display: true, text: 'CGPA' } },
+                            y: { title: { display: true, text: 'IQ' } }
+                        }
+                    }
+                });
+                addStatus('✅ Scatter chart created');
+                
+                // Test real data loading
+                const response = await fetch('real_dashboard_data.json');
+                const realData = await response.json();
+                addStatus('✅ Real data loaded: ' + realData.dataset_stats.placement_rate + '% placement rate');
+                
+                // Test bar chart with real data
+                const ctx3 = document.getElementById('test3').getContext('2d');
+                new Chart(ctx3, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Total', 'Placed', 'Not Placed'],
+                        datasets: [{
+                            data: [
+                                realData.dataset_stats.total_students,
+                                realData.dataset_stats.placed_students,
+                                realData.dataset_stats.not_placed_students
+                            ],
+                            backgroundColor: ['#6b7280', '#10b981', '#ef4444']
+                        }]
+                    },
+                    options: {
+                        responsive: false,
+                        plugins: { legend: { display: false } },
+                        scales: { y: { beginAtZero: true } }
+                    }
+                });
+                addStatus('✅ Bar chart with real data created');
+                
+            } catch (error) {
+                addStatus('❌ Error: ' + error.message, true);
+                console.error('Full error:', error);
+            }
+        }
+
+        // Run tests when page loads
+        document.addEventListener('DOMContentLoaded', testCharts);
+    </script>
+</body>
+</html>
